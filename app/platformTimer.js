@@ -23,7 +23,7 @@ function linuxOs(option){
         }
         let output = stdout.toString().replace('%CPU','').trim();
         if(parseFloat(output) > 70.0){
-            //restartEvent.emit('restart',output);
+            restartEvent.emit('restart',output);
         }
         //console.log(output);
       });
@@ -72,7 +72,7 @@ function _calculateCpuUsage(options){
         console.log("pecentage: ",perc);
 
         if(perc > 70.00){
-            //restartEvent.emit('restart',perc);
+            restartEvent.emit('restart',perc);
         }
 
 
