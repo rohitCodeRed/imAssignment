@@ -21,7 +21,7 @@ switch(platform) {
         timerId = setInterval(trackCpu.linuxOs, DELAY,{pid:process.pid});
         break;
     case 'win32': console.log("windows platform");
-        timerId = setInterval(trackCpu.windowOs, DELAY,{pid:process.pid});
+        trackCpu.windowOs();
         break;   
     default: console.log("unknown platform");
 }
