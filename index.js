@@ -5,7 +5,7 @@ const si = require('systeminformation');
 const config = require('./config.js');
 const geneateDynamicHtml = require('./app/generate_html');
 const trackCpu = require('./app/platformTimer');
-const restartEvent = require('./app/restartEvent');
+//const restartEvent = require('./app/restartEvent');
 
 
 
@@ -29,6 +29,9 @@ switch(platform) {
 //setting a port
 app.set(port);
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ type: 'application/json' }));
+
 
 //allowing same origin api requests...
 app.use(function (req, res, next) {
@@ -38,9 +41,7 @@ app.use(function (req, res, next) {
 });
 
 //handle Users api request from client...
-// app.use('/api/user', require('./app/api/user_api'));
-// app.use('/api/logged', require('./app/api/logged_user_api'));
-// app.use('/api/apiAcess',require('./app/api/api_acess'));
+app.use('/api/message', require('./app/api/message_api'));
 
 
 app.use('/', function(req, res) {
@@ -69,7 +70,7 @@ mongoose.connect(config.mongoDB_url,{
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(
-(result) => { console.log("\n**-----------MongoDB connection established------------**\n DB:",result.name,"\n Host:",result.host,"\n Port:",result.port); },
+(result) => { console.log("\n**-----------MongoDB connection established------------**\n DB:","insuredmine","\n Host:","127.0.0.1","\n Port:","27017"); },
 err => { console.log("Mongo DB connection error: ",JSON.stringify(err.message)); }
 );
 
