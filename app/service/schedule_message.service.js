@@ -17,30 +17,53 @@ function scheduleMessage(doc){
 
 }
 
-function _migrateData(doc){
-    collection_1.find({"_id":doc._id},function(err,result){
-        if(err){
-          throw new Error(err.message);
+function _migrateData(outerDoc){
+  try {
+    collection_1.find({"_id":outerDoc._id},function(err,result){
+      if(err){
+        throw new Error(err.message);
+      }
+      else if(!result){
+        throw new Error("Data not Found!");
+      }
+      else{
+        let data = result.map((doc)=>{
+          return {"message":doc.message};
+        });
+        let createMessage = new collection_2(data[0]);
+        createMessage.save(err => {
+          if (err) {
+            throw new Error(err.message);
+          }
+          else{
+            //resolve({"_id":createMessage._id,"message":createMessage.message,"day":createMessage.day,"time":createMessage.time});
+          console.log("Message migrated in collection_2 with Message: ",createMessage.message);
+            _removeMessage(outerDoc._id);
         }
-        else if(!result){
-          throw new Error("Data not Found!");
-        }
-        else{
-          let data = result.map((doc)=>{
-            return {"message":doc.message};
-          });
-          let createMessage = new collection_2(data[0]);
-          createMessage.save(err => {
-            if (err) {
-              throw new Error(err.message);
-            }
-            else{
-              //resolve({"_id":createMessage._id,"message":createMessage.message,"day":createMessage.day,"time":createMessage.time});
-            console.log("Message migrated in collection_2 with Message: ",createMessage.message);
-            }
-          });
-        }
-       });
+        });
+      }
+     });
+  } catch (error) {
+    console.log("error: ",error.message);
+  }
+    
+}
+
+function _removeMessage(id){
+  try {
+    collection_1.deleteOne({"_id":id},(err, result) => {
+      // Handle any possible database errors
+      if (err){
+        throw new Error(err.message);
+      }
+      else{
+        console.log("Data deleted from collection_1",result);
+      }
+    });
+  } catch (error) {
+    console.log("error: ",error.message);
+  }
+  
 }
 
 function _calculateDelay(day,ptime){
@@ -74,9 +97,5 @@ function _weeks(day){
     return weeks.indexOf(day) + 1;
 }
 
-
-function migrateData(){
-
-}
 
 module.exports = scheduleServices;
