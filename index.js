@@ -1,19 +1,11 @@
 const express = require('express');
 const app = express();
-//const stringify = require('json-stringify');
-//var router = express.Router();
-//const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const si = require('systeminformation');
 const config = require('./config.js');
 const geneateDynamicHtml = require('./app/generate_html');
 
 const port = process.env.PORT || 3001;
-
-
-
-
-//app.use(express.static(__dirname + '/public'));
 
 //setting a port
 app.set(port);
@@ -32,8 +24,10 @@ app.use(function (req, res, next) {
 // app.use('/api/apiAcess',require('./app/api/api_acess'));
 
 app.use('/', function(req, res) {
-   //load the single view file (angular will handle the page changes on the front-end)
-  si.getStaticData()
+
+  if(req.url == "/"){
+    //load the static view of server info.
+    si.getStaticData()
       .then(function(data){
         //console.log(" info: ",data);
         res.send( geneateDynamicHtml(data));
@@ -41,10 +35,34 @@ app.use('/', function(req, res) {
       .catch(function(error){
         console.error(error)
       });
+  }
+  else if(req.url == "/file"){
+    res.sendFile("public/upload_file.html",{root: __dirname });
+  }
+  else if(req.url == "/api/uploadfile" && req.method =="POST"){
+    let inCommingData = '';
+    req.setEncoding('utf8');
 
-  //res.sendFile("public/home.html",{root: __dirname });
+    // Readable streams emit 'data' events once a listener is added.
+    req.on('data', (chunk) => {
+      inCommingData += chunk;
+    });
+    
+    req.on('end', () => {
+      try {
+        console.log("data",inCommingData);
+        // Write back something interesting to the user:
+        res.sendFile("public/upload_complete.html",{root: __dirname });
+      } catch (er) {
+        // uh oh! bad json!
+        res.statusCode = 400;
+        return res.end(`error: ${er.message}`);
+      }
+    });
+    
+  }
+  
 });
-
 
 app.listen(port, function(){
   console.log('Example app listening on port: '+port);
@@ -53,10 +71,10 @@ app.listen(port, function(){
 
 
 //Connecting to mongoDB
-mongoose.connect(config.mongoDB_url,{
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(
-(result) => { console.log("\n**-----------MongoDB connection established------------**\n DB:",result.name,"\n Host:",result.host,"\n Port:",result.port); },
-err => { console.log("Mongo DB connection error: ",JSON.stringify(err.message)); }
-);
+// mongoose.connect(config.mongoDB_url,{
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// }).then(
+// (result) => { console.log("\n**-----------MongoDB connection established------------**\n DB:","insuredmine","\n Host:","127.0.0.1","\n Port:","27017"); },
+// err => { console.log("Mongo DB connection error: ",JSON.stringify(err.message)); }
+// );
