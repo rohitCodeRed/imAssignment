@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const si = require('systeminformation');
 const config = require('./config.js');
 const geneateDynamicHtml = require('./app/generate_html');
+const {Worker} = require("worker_threads");
 
 const port = process.env.PORT || 3001;
 
@@ -42,6 +43,7 @@ app.use('/', function(req, res) {
   else if(req.url == "/api/uploadfile" && req.method =="POST"){
     let inCommingData = '';
     req.setEncoding('utf8');
+    
 
     // Readable streams emit 'data' events once a listener is added.
     req.on('data', (chunk) => {
@@ -51,7 +53,22 @@ app.use('/', function(req, res) {
     req.on('end', () => {
       try {
         console.log("data",inCommingData);
-        // Write back something interesting to the user:
+        const worker = new Worker("./app/parseExelTojson.js", {workerData:inCommingData});
+        
+        //Listen for a message from worker
+        worker.once("message", result => {
+          console.log(`Worker thread completed the task with json length: ${result}`);
+        });
+
+        worker.on("error", error => {
+          console.log("Error occured in worker.",error);
+        });
+
+        worker.on('exit', (code) => {
+          if (code !== 0)
+            console.log(`Worker stopped with exit code ${code}`);
+        });
+        // Write back to the user:
         res.sendFile("public/upload_complete.html",{root: __dirname });
       } catch (er) {
         // uh oh! bad json!
