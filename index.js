@@ -41,7 +41,7 @@ app.use('/', function(req, res) {
     res.sendFile("public/upload_file.html",{root: __dirname });
   }
   else if(req.url == "/api/uploadfile" && req.method =="POST"){
-    let inCommingData = '';
+    var inCommingData = '';
     req.setEncoding('utf8');
     
 
@@ -52,8 +52,9 @@ app.use('/', function(req, res) {
     
     req.on('end', () => {
       try {
-        console.log("data",inCommingData);
-        const worker = new Worker("./app/parseExelTojson.js", {workerData:inCommingData});
+        //console.log("data",inCommingData);
+        let data = inCommingData;
+        const worker = new Worker("./app/parseExelTojson.js", {workerData:{"data":data}});
         
         //Listen for a message from worker
         worker.once("message", result => {
@@ -88,10 +89,10 @@ app.listen(port, function(){
 
 
 //Connecting to mongoDB
-// mongoose.connect(config.mongoDB_url,{
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// }).then(
-// (result) => { console.log("\n**-----------MongoDB connection established------------**\n DB:","insuredmine","\n Host:","127.0.0.1","\n Port:","27017"); },
-// err => { console.log("Mongo DB connection error: ",JSON.stringify(err.message)); }
-// );
+mongoose.connect(config.mongoDB_url,{
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(
+(result) => { console.log("\n**-----------MongoDB connection established------------**\n DB:","insuredmine","\n Host:","127.0.0.1","\n Port:","27017"); },
+err => { console.log("Mongo DB connection error: ",JSON.stringify(err.message)); }
+);
