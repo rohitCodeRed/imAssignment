@@ -1,10 +1,9 @@
 const Promise = require('promise');
-const Collection = require('../models/agent.model');
 const services = {};
 
-services.find = findByQuery;
+services.find = find;
 
-function findByQuery(query){
+function find(query,Collection){
   let findPromise = new Promise((resolve,reject)=>{
 
     Collection.find(query,function(err,result){

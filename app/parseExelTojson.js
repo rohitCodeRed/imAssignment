@@ -25,7 +25,9 @@ mongoose.connect(config.mongoDB_url,{
       csv({noheader:false,headers: HEADERS})
         .fromString(workerData.data)
         .then((result) => {
-            
+            // console.log(result[0]);
+            // console.log(result[1]);
+            // console.log(result[2]);
             _iterateAndInsert(result);
         })
         .catch((err) => {
@@ -38,7 +40,7 @@ mongoose.connect(config.mongoDB_url,{
 
 
 async function _iterateAndInsert(jsonArrData){
-    for(let i=0;i<jsonArrData.length;i++){
+    for(let i=3;i<jsonArrData.length;i++){
         let doc = jsonArrData[i];
 
         let agentQuery = {"agent":doc.agent};

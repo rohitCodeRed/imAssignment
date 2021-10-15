@@ -19,9 +19,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-//handle Users api request from client...
-// app.use('/api/user', require('./app/api/user_api'));
-// app.use('/api/logged', require('./app/api/logged_user_api'));
+//handle api request from client...
+app.use('/api/policy', require('./app/api/policy_api'));
+app.use('/api/aggregatePolicy', require('./app/api/aggregatePolicy_api'));
 // app.use('/api/apiAcess',require('./app/api/api_acess'));
 
 app.use('/', function(req, res) {
@@ -45,7 +45,7 @@ app.use('/', function(req, res) {
     req.setEncoding('utf8');
     
 
-    // Readable streams emit 'data' events once a listener is added.
+    //Readable streams emit 'data' events once a listener is added.
     req.on('data', (chunk) => {
       inCommingData += chunk;
     });

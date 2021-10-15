@@ -1,13 +1,12 @@
 const Promise = require('promise');
-const Collection = require('../models/policy.model');
 const services = {};
 
-services.find = findByQuery;
+services.findOne = findOne;
 
-function findByQuery(query){
+function findOne(query,Collection){
   let findPromise = new Promise((resolve,reject)=>{
 
-    Collection.find(query,function(err,result){
+    Collection.findOne(query,function(err,result){
         if(err){
           reject(new Error(err.message));
         }
